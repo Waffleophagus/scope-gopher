@@ -1,23 +1,80 @@
 {
   "name": "scope-gopher",
   "displayName": "Scope Gopher",
-  "description": "If \"loginToSystem\" and \"LoginToSystem\" look the same to you, this plugin helps you quickly identify which is public and which is private.",
+  "description": "Make exported and unexported Go declarations visible in the editor.",
   "version": "0.0.1",
   "engines": {
-    "vscode": "^1.120.0"
+    "vscode": "^1.116.0"
   },
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onLanguage:go"
+  ],
   "main": "./out/extension.js",
+  "extensionDependencies": [
+    "golang.go"
+  ],
   "contributes": {
-    "commands": [
-      {
-        "command": "scope-gopher.helloWorld",
-        "title": "Hello World"
+    "configuration": {
+      "title": "Scope Gopher",
+      "properties": {
+        "scopeGopher.highlighting.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable Scope Gopher declaration highlighting."
+        },
+        "scopeGopher.highlighting.exportedColor": {
+          "type": "string",
+          "default": "#4EC9B0",
+          "description": "Foreground color for exported declarations."
+        },
+        "scopeGopher.highlighting.unexportedColor": {
+          "type": "string",
+          "default": "#C586C0",
+          "description": "Foreground color for unexported declarations."
+        },
+        "scopeGopher.inlayHints.enabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable Scope Gopher inlay hints."
+        },
+        "scopeGopher.inlayHints.exportedLabel": {
+          "type": "string",
+          "default": "exported",
+          "description": "Inlay hint label for exported declarations."
+        },
+        "scopeGopher.inlayHints.unexportedLabel": {
+          "type": "string",
+          "default": "unexported",
+          "description": "Inlay hint label for unexported declarations."
+        },
+        "scopeGopher.enabledDeclarationKinds": {
+          "type": "array",
+          "default": [
+            "function",
+            "method"
+          ],
+          "items": {
+            "type": "string",
+            "enum": [
+              "function",
+              "method",
+              "interfaceMethod",
+              "struct",
+              "interface",
+              "type",
+              "field",
+              "variable",
+              "constant"
+            ]
+          },
+          "uniqueItems": true,
+          "description": "Declaration kinds that Scope Gopher marks."
+        }
       }
-    ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "pnpm run compile",
@@ -28,7 +85,7 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/vscode": "^1.120.0",
+    "@types/vscode": "^1.116.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "22.x",
     "typescript-eslint": "^8.56.1",

@@ -1,71 +1,104 @@
-# scope-gopher README
+# Scope Gopher
 
-This is the README for your extension "scope-gopher". After writing up a brief description, we recommend including the following sections.
+<p align="center">
+  <img src="assets/logo.png" alt="Scope Gopher logo" width="400" />
+</p>
+
+A VS Code extension that makes Go declaration export status visible at a glance.
+
+[![requires-golang.go](https://img.shields.io/badge/requires-golang.go-blue)](https://marketplace.visualstudio.com/items?itemName=golang.go)
+
+**Requires the [Go extension](https://marketplace.visualstudio.com/items?itemName=golang.go).**
+
+In Go, uppercase means exported (`LoginToSystem`) and lowercase means unexported (`loginToSystem`). Scope Gopher highlights declaration names in two equal-weight colors so you can tell the difference without scanning case.
+
+![Scope Gopher inlay hints in action](assets/example.png)
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+- **Declaration highlighting** — exported and unexported names appear in different colors.
+- **Inlay hints** — optionally show `exported` or `unexported` labels before declaration names.
+- **Powered by gopls** — uses the official Go extension's document symbols, so markings stay in sync with your code.
 
-For example if there is an image subfolder under your extension project workspace:
+Markings apply to declaration names only, not call sites or full signatures.
 
-\!\[feature X\]\(images/feature-x.png\)
+## Defaults
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+- Highlighting: **enabled**
+- Inlay hints: **disabled**
+- Eligible declaration kinds: **functions and methods**
+
+### What gets marked
+
+```go
+func LoginToSystem() {}      // marked
+
+func loginToSystem() {}      // marked
+
+func (s *Service) Start() {} // marked (receiver name is not)
+```
+
+With inlay hints enabled:
+
+```go
+func exported LoginToSystem() {}
+
+func unexported loginToSystem() {}
+
+func (s *Service) exported Start() {}
+```
+
+Hints are virtual editor text — they never modify source files.
 
 ## Requirements
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+Requires the [official Go extension](https://marketplace.visualstudio.com/items?itemName=golang.go).
+
+Markings rely on `gopls` document symbols. If symbols are unavailable while `gopls` is starting or indexing, the extension waits quietly until they are ready.
 
 ## Extension Settings
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+| Setting | Description | Default |
+|---------|-------------|---------|
+| `scopeGopher.highlight.enabled` | Enable declaration highlighting | `true` |
+| `scopeGopher.highlight.exportedColor` | Color for exported names | `"#7dd3fc"` |
+| `scopeGopher.highlight.unexportedColor` | Color for unexported names | `"#fca5a5"` |
+| `scopeGopher.inlayHints.enabled` | Enable inlay hints | `false` |
+| `scopeGopher.inlayHints.exportedLabel` | Label for exported hints | `"exported"` |
+| `scopeGopher.inlayHints.unexportedLabel` | Label for unexported hints | `"unexported"` |
+| `scopeGopher.declarations.enabledKinds` | Which declaration kinds to mark | `["function", "method"]` |
 
-For example:
+### Supported declaration kinds
 
-This extension contributes the following settings:
+The full list of kinds `gopls` can expose:
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+```json
+[
+  "function",
+  "method",
+  "interfaceMethod",
+  "struct",
+  "interface",
+  "type",
+  "field",
+  "variable",
+  "constant"
+]
+```
 
-## Known Issues
+Kinds are mapped from `gopls` symbol types. If `gopls` does not distinguish a kind distinctly, it is mapped to the nearest logical enabled kind or skipped.
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+## What gets marked
 
-## Release Notes
+- **In scope:** package-level declarations in any Go file where document symbols are available, including tests, generated files, vendor files, dirty buffers, and files outside the workspace.
+- **Out of scope:** local variables, constants, parameters, receiver names, labels, and short declarations — anything that cannot be exported from its immediate lexical scope.
 
-Users appreciate release notes as you update your extension.
+Grouped or multi-name declarations are marked per identifier when `gopls` provides unambiguous ranges.
 
-### 1.0.0
+## Identifier support
 
-Initial release of ...
+Targets conventional ASCII Go identifiers. Simple Unicode casing is handled on a best-effort basis.
 
-### 1.0.1
+## Design principle
 
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+Export status is neutral. The two highlighting colors carry equal visual weight — neither exported nor unexported is presented as preferable.

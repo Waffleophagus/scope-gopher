@@ -6,4 +6,4 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
-- Initial release
+- Documented the Scope Gopher MVP plan, product language, and official Go extension dependency.
