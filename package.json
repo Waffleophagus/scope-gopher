@@ -3,11 +3,12 @@
   "displayName": "Scope Gopher",
   "publisher": "d6gg",
   "description": "Make exported and unexported Go declarations visible in the editor.",
+  "icon": "assets/logo.png",
   "repository": {
     "type": "git",
     "url": "https://github.com/Waffleophagus/scope-gopher.git"
   },
-  "version": "0.0.1",
+  "version": "0.0.2",
   "engines": {
     "vscode": "^1.116.0"
   },
