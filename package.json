@@ -1,6 +1,7 @@
 {
   "name": "scope-gopher",
   "displayName": "Scope Gopher",
+  "publisher": "d6gg",
   "description": "Make exported and unexported Go declarations visible in the editor.",
   "repository": {
     "type": "git",
